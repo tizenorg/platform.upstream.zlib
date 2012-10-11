@@ -1,0 +1,107 @@
+%define keepstatic 1
+Name:           zlib
+Provides:       libz
+Obsoletes:      libz
+Version:        1.2.7
+Release:        0
+Summary:        Data Compression Library
+License:        Zlib
+Group:          System/Libraries
+Url:            http://www.zlib.net/
+# git://github.com/kaffeemonster/zlib.git (branch adler32_vec)
+Source:         http://zlib.net/zlib-%{version}.tar.bz2
+Source1:        LICENSE
+Source2:        baselibs.conf
+BuildRequires:  pkgconfig
+
+%description
+ftp://ds.internic.net/rfc/rfc1950.txt (zlib format), rfc1951.txt
+(deflate format) and rfc1952.txt (gzip format). These documents are
+also available in other formats from
+ftp://ftp.uu.net/graphics/png/documents/zlib/zdoc-index.html.
+
+%package devel
+Summary:        Include Files and Libraries mandatory for Development
+Group:          Development/Languages/C and C++
+Requires:       glibc-devel
+Requires:       zlib = %{version}
+Provides:       libz:/usr/include/zlib.h
+
+%description devel
+This package contains all necessary include files and libraries needed
+to develop applications that require the provided includes and
+libraries.
+
+%package devel-static
+Summary:        Include Files and Libraries mandatory for Development
+Group:          Development/Languages/C and C++
+Requires:       %{name}-devel = %{version}
+Provides:       %{name}-devel:%{_libdir}/libz.a
+
+%description devel-static
+This package contains all necessary include files and libraries needed
+to develop applications that require the provided includes and
+libraries.
+
+%prep
+%setup -q
+
+%build
+export LDFLAGS="-Wl,-z,relro,-z,now"
+# Marcus: breaks example64 in 32bit builds.
+%define do_profiling 0
+%if %{do_profiling}
+profiledir=$(mktemp -d)
+trap "rm -rf $profiledir" EXIT
+CC="gcc" ./configure --shared --prefix=%{_prefix} --libdir=/%{_lib}
+make CFLAGS="%{optflags} %{cflags_profile_generate}=$profiledir" %{?_smp_mflags}
+time make check
+make clean
+make CFLAGS="%{optflags} %{cflags_profile_feedback}=$profiledir" %{?_smp_mflags}
+%else
+export CFLAGS="%{optflags}"
+CC="gcc" ./configure --shared --prefix=%{_prefix} --libdir=/%{_lib}
+make %{?_smp_mflags}
+%endif
+
+%check
+time make check
+
+%install
+#mkdir -p %{buildroot}%{_mandir}/man3
+mkdir -p %{buildroot}%{_libdir}
+%make_install
+ln -s -v /%{_lib}/$(readlink %{buildroot}/%{_lib}/libz.so) %{buildroot}%{_libdir}/libz.so
+rm -v %{buildroot}/%{_lib}/libz.so
+# static lib
+mv %{buildroot}/%{_lib}/libz.a %{buildroot}%{_libdir}
+# Move .pc file to %{_libdir}
+mv %{buildroot}/%{_lib}/pkgconfig %{buildroot}%{_libdir}
+# manpage
+install -m 644 zlib.3 %{buildroot}%{_mandir}/man3
+install -m 644 zutil.h %{buildroot}%{_includedir}
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+%files
+%defattr(-,root,root)
+/%{_lib}/libz.so.1.2.*
+/%{_lib}/libz.so.1
+
+%files devel
+%defattr(-,root,root)
+%doc README 
+%{_mandir}/man3/zlib.3.gz
+%{_includedir}/zlib.h
+%{_includedir}/zconf.h
+%{_includedir}/zutil.h
+%{_libdir}/libz.so
+%{_libdir}/pkgconfig/zlib.pc
+
+%files devel-static
+%defattr(-,root,root)
+%{_libdir}/libz.a
+
+%changelog
