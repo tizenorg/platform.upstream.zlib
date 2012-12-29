@@ -54,7 +54,7 @@ Minizip manipulates files from a .zip archive.
 %package -n minizip-devel
 Summary:    Development files for the minizip library
 Group:      Development/Libraries
-Requires:   %{name} = %{version}-%{release}
+Requires:   minizip = %{version}-%{release}
 
 %description -n minizip-devel
 This package contains the libraries and header files needed for
