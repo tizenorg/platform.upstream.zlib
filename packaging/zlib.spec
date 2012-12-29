@@ -43,12 +43,28 @@ This package contains all necessary include files and libraries needed
 to develop applications that require the provided includes and
 libraries.
 
+%package -n minizip
+Summary:    Minizip manipulates files from a .zip archive
+Group:      System/Libraries
+Requires:   %{name} = %{version}-%{release}
+
+%description -n minizip
+Minizip manipulates files from a .zip archive.
+
+%package -n minizip-devel
+Summary:    Development files for the minizip library
+Group:      Development/Libraries
+Requires:   %{name} = %{version}-%{release}
+
+%description -n minizip-devel
+This package contains the libraries and header files needed for
+developing applications which use minizip.
+
 %prep
 %setup -q
 
 %build
 export LDFLAGS="-Wl,-z,relro,-z,now"
-# Marcus: breaks example64 in 32bit builds.
 %define do_profiling 0
 %if %{do_profiling}
 profiledir=$(mktemp -d)
@@ -63,6 +79,10 @@ export CFLAGS="%{optflags}"
 CC="gcc" ./configure --shared --prefix=%{_prefix} --libdir=/%{_lib}
 make %{?_smp_mflags}
 %endif
+
+cd contrib/minizip
+%reconfigure
+make %{?_smp_mflags}
 
 %check
 time make check
@@ -80,6 +100,12 @@ mv %{buildroot}/%{_lib}/pkgconfig %{buildroot}%{_libdir}
 # manpage
 install -m 644 zlib.3 %{buildroot}%{_mandir}/man3
 install -m 644 zutil.h %{buildroot}%{_includedir}
+
+pushd contrib/minizip
+make install DESTDIR=$RPM_BUILD_ROOT
+rm -rf %{buildroot}%{_libdir}/libminizip.a
+rm -rf %{buildroot}%{_libdir}/libminizip.la
+popd
 
 %post -p /sbin/ldconfig
 
@@ -103,5 +129,14 @@ install -m 644 zutil.h %{buildroot}%{_includedir}
 %files devel-static
 %defattr(-,root,root)
 %{_libdir}/libz.a
+
+%files -n minizip
+%{_libdir}/libminizip.so.*
+
+%files -n minizip-devel
+%dir %{_includedir}/minizip
+%{_includedir}/minizip/*.h
+%{_libdir}/libminizip.so
+%{_libdir}/pkgconfig/minizip.pc
 
 %changelog
