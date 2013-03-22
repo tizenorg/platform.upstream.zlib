@@ -22,7 +22,7 @@ ftp://ftp.uu.net/graphics/png/documents/zlib/zdoc-index.html.
 
 %package devel
 Summary:        Include Files and Libraries mandatory for Development
-Group:          Development/Languages
+Group:          Development/Libraries
 Requires:       glibc-devel
 Requires:       zlib = %{version}
 Provides:       libz:/usr/include/zlib.h
@@ -34,7 +34,7 @@ libraries.
 
 %package devel-static
 Summary:        Include Files and Libraries mandatory for Development
-Group:          Development/Languages
+Group:          Development/Libraries
 Requires:       %{name}-devel = %{version}
 Provides:       %{name}-devel:%{_libdir}/libz.a
 
