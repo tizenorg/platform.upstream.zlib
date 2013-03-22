@@ -6,7 +6,7 @@ Version:        1.2.7
 Release:        0
 Summary:        Data Compression Library
 License:        Zlib
-Group:          System/Libraries
+Group:          Base/Libraries
 Url:            http://www.zlib.net/
 # git://github.com/kaffeemonster/zlib.git (branch adler32_vec)
 Source:         http://zlib.net/zlib-%{version}.tar.bz2
@@ -22,7 +22,7 @@ ftp://ftp.uu.net/graphics/png/documents/zlib/zdoc-index.html.
 
 %package devel
 Summary:        Include Files and Libraries mandatory for Development
-Group:          Development/Languages/C and C++
+Group:          Development/Languages
 Requires:       glibc-devel
 Requires:       zlib = %{version}
 Provides:       libz:/usr/include/zlib.h
@@ -34,7 +34,7 @@ libraries.
 
 %package devel-static
 Summary:        Include Files and Libraries mandatory for Development
-Group:          Development/Languages/C and C++
+Group:          Development/Languages
 Requires:       %{name}-devel = %{version}
 Provides:       %{name}-devel:%{_libdir}/libz.a
 
