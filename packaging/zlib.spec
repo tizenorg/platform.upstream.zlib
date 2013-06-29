@@ -12,6 +12,7 @@ Url:            http://www.zlib.net/
 Source:         http://zlib.net/zlib-%{version}.tar.bz2
 Source1:        LICENSE
 Source2:        baselibs.conf
+Source1001: 	zlib.manifest
 BuildRequires:  pkgconfig
 
 %description
@@ -62,6 +63,7 @@ developing applications which use minizip.
 
 %prep
 %setup -q
+cp %{SOURCE1001} .
 
 %build
 export LDFLAGS="-Wl,-z,relro,-z,now"
@@ -112,11 +114,13 @@ popd
 %postun -p /sbin/ldconfig
 
 %files
+%manifest %{name}.manifest
 %defattr(-,root,root)
 /%{_lib}/libz.so.1.2.*
 /%{_lib}/libz.so.1
 
 %files devel
+%manifest %{name}.manifest
 %defattr(-,root,root)
 %doc README 
 %{_mandir}/man3/zlib.3.gz
@@ -127,13 +131,16 @@ popd
 %{_libdir}/pkgconfig/zlib.pc
 
 %files devel-static
+%manifest %{name}.manifest
 %defattr(-,root,root)
 %{_libdir}/libz.a
 
 %files -n minizip
+%manifest %{name}.manifest
 %{_libdir}/libminizip.so.*
 
 %files -n minizip-devel
+%manifest %{name}.manifest
 %dir %{_includedir}/minizip
 %{_includedir}/minizip/*.h
 %{_libdir}/libminizip.so
