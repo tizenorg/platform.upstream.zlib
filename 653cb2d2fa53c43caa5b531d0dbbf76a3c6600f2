@@ -1,0 +1,8 @@
+Change-Id: I653cb2d2fa53c43caa5b531d0dbbf76a3c6600f2
+Code-Review+2: Ryan Ware <ware@linux.intel.com>
+Verified+1: Ryan Ware <ware@linux.intel.com>
+Submitted-by: Ryan Ware <ware@linux.intel.com>
+Submitted-at: Mon, 08 Jul 2013 09:38:10 -0700
+Reviewed-on: https://review.tizen.org/gerrit/5036
+Project: platform/upstream/zlib
+Branch: refs/heads/tizen
