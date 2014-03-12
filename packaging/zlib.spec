@@ -83,7 +83,8 @@ make %{?_smp_mflags}
 %endif
 
 cd contrib/minizip
-%reconfigure
+autoreconf -fi
+%configure
 make %{?_smp_mflags}
 
 %check
