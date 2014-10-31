@@ -2,17 +2,17 @@
 Name:           zlib
 Provides:       libz
 Obsoletes:      libz
-Version:        1.2.7
+Version:        1.2.8
 Release:        0
 Summary:        Data Compression Library
 License:        Zlib
 Group:          Base/Libraries
 Url:            http://www.zlib.net/
-# git://github.com/kaffeemonster/zlib.git (branch adler32_vec)
+#X-Vcs-Url:     https://github.com/madler/zlib.git
 Source:         http://zlib.net/zlib-%{version}.tar.bz2
 Source1:        LICENSE
 Source2:        baselibs.conf
-Source1001: 	zlib.manifest
+Source1001:     zlib.manifest
 BuildRequires:  pkgconfig
 
 %description
@@ -45,12 +45,12 @@ to develop applications that require the provided includes and
 libraries.
 
 %package -n minizip
-Summary:    Minizip manipulates files from a .zip archive
+Summary:    Manipulates files from a .zip archive
 Group:      System/Libraries
 Requires:   %{name} = %{version}-%{release}
 
 %description -n minizip
-Minizip manipulates files from a .zip archive.
+Minizip is a tool to manipulates files from a .zip archive.
 
 %package -n minizip-devel
 Summary:    Development files for the minizip library
@@ -72,39 +72,39 @@ export LDFLAGS="-Wl,-z,relro,-z,now"
 profiledir=$(mktemp -d)
 trap "rm -rf $profiledir" EXIT
 CC="gcc" ./configure --shared --prefix=%{_prefix} --libdir=/%{_lib}
-make CFLAGS="%{optflags} %{cflags_profile_generate}=$profiledir" %{?_smp_mflags}
-time make check
-make clean
-make CFLAGS="%{optflags} %{cflags_profile_feedback}=$profiledir" %{?_smp_mflags}
+%__make CFLAGS="%{optflags} %{cflags_profile_generate}=$profiledir" %{?_smp_mflags}
+time %__make check
+%__make clean
+%__make CFLAGS="%{optflags} %{cflags_profile_feedback}=$profiledir" %{?_smp_mflags}
 %else
 export CFLAGS="%{optflags}"
 CC="gcc" ./configure --shared --prefix=%{_prefix} --libdir=/%{_lib}
-make %{?_smp_mflags}
+%__make %{?_smp_mflags}
 %endif
 
 cd contrib/minizip
 %reconfigure
-make %{?_smp_mflags}
+%__make %{?_smp_mflags}
 
 %check
-time make check
+time %__make check
 
 %install
-#mkdir -p %{buildroot}%{_mandir}/man3
+#mkdir -p %%{buildroot}%%{_mandir}/man3
 mkdir -p %{buildroot}%{_libdir}
 %make_install
-ln -s -v /%{_lib}/$(readlink %{buildroot}/%{_lib}/libz.so) %{buildroot}%{_libdir}/libz.so
+ln -sf -v /%{_lib}/$(readlink %{buildroot}/%{_lib}/libz.so) %{buildroot}%{_libdir}/libz.so
 rm -v %{buildroot}/%{_lib}/libz.so
 # static lib
 mv %{buildroot}/%{_lib}/libz.a %{buildroot}%{_libdir}
-# Move .pc file to %{_libdir}
+# Move .pc file to %%{_libdir}
 mv %{buildroot}/%{_lib}/pkgconfig %{buildroot}%{_libdir}
 # manpage
 install -m 644 zlib.3 %{buildroot}%{_mandir}/man3
 install -m 644 zutil.h %{buildroot}%{_includedir}
 
 pushd contrib/minizip
-make install DESTDIR=$RPM_BUILD_ROOT
+%make_install
 rm -rf %{buildroot}%{_libdir}/libminizip.a
 rm -rf %{buildroot}%{_libdir}/libminizip.la
 popd
@@ -112,6 +112,10 @@ popd
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
+
+%post -n minizip -p /sbin/ldconfig
+
+%postun -n minizip -p /sbin/ldconfig
 
 %files
 %manifest %{name}.manifest
@@ -122,7 +126,8 @@ popd
 %files devel
 %manifest %{name}.manifest
 %defattr(-,root,root)
-%doc README 
+%doc README
+%license README
 %{_mandir}/man3/zlib.3.gz
 %{_includedir}/zlib.h
 %{_includedir}/zconf.h
@@ -141,9 +146,6 @@ popd
 
 %files -n minizip-devel
 %manifest %{name}.manifest
-%dir %{_includedir}/minizip
 %{_includedir}/minizip/*.h
 %{_libdir}/libminizip.so
 %{_libdir}/pkgconfig/minizip.pc
-
-%changelog
