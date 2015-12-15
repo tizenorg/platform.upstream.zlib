@@ -93,7 +93,9 @@ time %__make check
 #mkdir -p %%{buildroot}%%{_mandir}/man3
 mkdir -p %{buildroot}%{_libdir}
 %make_install
-ln -sf -v /%{_lib}/$(readlink %{buildroot}/%{_lib}/libz.so) %{buildroot}%{_libdir}/libz.so
+pushd %{buildroot}%{_libdir}
+ln -sf -v ../../%{_lib}/$(readlink %{buildroot}/%{_lib}/libz.so) %{buildroot}%{_libdir}/libz.so
+popd
 rm -v %{buildroot}/%{_lib}/libz.so
 # static lib
 mv %{buildroot}/%{_lib}/libz.a %{buildroot}%{_libdir}
