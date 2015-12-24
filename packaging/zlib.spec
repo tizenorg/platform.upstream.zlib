@@ -63,6 +63,7 @@ developing applications which use minizip.
 
 %prep
 %setup -q
+cp %{SOURCE1} .
 cp %{SOURCE1001} .
 
 %build
@@ -122,6 +123,7 @@ popd
 %files
 %manifest %{name}.manifest
 %defattr(-,root,root)
+%license LICENSE
 /%{_lib}/libz.so.1.2.*
 /%{_lib}/libz.so.1
 
