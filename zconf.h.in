@@ -350,6 +350,10 @@
 #  endif
 #endif
 
+#if !defined (ZEXTERN) && defined (HAVE_HIDDEN)
+#  define ZEXTERN __attribute__ ((visibility ("default"))) extern
+#endif
+
 #ifndef ZEXTERN
 #  define ZEXTERN extern
 #endif
