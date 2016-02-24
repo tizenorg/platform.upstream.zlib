@@ -71,15 +71,17 @@ export LDFLAGS="-Wl,-z,relro,-z,now"
 %if %{do_profiling}
 profiledir=$(mktemp -d)
 trap "rm -rf $profiledir" EXIT
+export CFLAGS+=" -fvisibility=hidden -flto "
 CC="gcc" ./configure --shared --prefix=%{_prefix} --libdir=/%{_lib}
-%__make CFLAGS="%{optflags} %{cflags_profile_generate}=$profiledir" %{?_smp_mflags}
+%__make V=1 CFLAGS="%{optflags} %{cflags_profile_generate}=$profiledir -fvisibility=hidden -flto " %{?_smp_mflags}
 time %__make check
 %__make clean
-%__make CFLAGS="%{optflags} %{cflags_profile_feedback}=$profiledir" %{?_smp_mflags}
+%__make V=1 CFLAGS="%{optflags} %{cflags_profile_feedback}=$profiledir -fvisibility=hidden -flto " %{?_smp_mflags}
 %else
 export CFLAGS="%{optflags}"
+export CFLAGS+=" -fvisibility=hidden -flto "
 CC="gcc" ./configure --shared --prefix=%{_prefix} --libdir=/%{_lib}
-%__make %{?_smp_mflags}
+%__make V=1 %{?_smp_mflags}
 %endif
 
 cd contrib/minizip
